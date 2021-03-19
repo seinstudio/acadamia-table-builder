@@ -1,6 +1,6 @@
 {
   "name": "acadamia-table-builder",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "Table Component for Acadamia",
   "author": "sehalsein",
   "license": "MIT",
@@ -24,7 +24,9 @@
     "deploy": "gh-pages -d example/build"
   },
   "peerDependencies": {
-    "react": "^16.0.0"
+    "react": "^16.0.0",
+    "@material-ui/core": "^4.11.3",
+    "@material-ui/lab": "^4.0.0-alpha.57"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^4.2.4",
@@ -59,5 +61,6 @@
   },
   "files": [
     "dist"
-  ]
+  ],
+  "dependencies": {}
 }

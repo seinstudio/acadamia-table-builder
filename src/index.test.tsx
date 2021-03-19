@@ -1,7 +1,7 @@
-import { ExampleComponent } from '.'
+import TableBuilder from '.'
 
-describe('ExampleComponent', () => {
+describe('TableBuilder', () => {
   it('is truthy', () => {
-    expect(ExampleComponent).toBeTruthy()
+    expect(TableBuilder).toBeTruthy()
   })
 })
