@@ -1,6 +1,11 @@
-import MUITableCell from '@material-ui/core/TableCell'
+import MUITableCell, {
+  TableCellProps as MUITableCellProps
+} from '@material-ui/core/TableCell'
 import React from 'react'
-import { TableCellHeaderProps } from '../typings'
+
+export interface TableCellHeaderProps extends MUITableCellProps {
+  textAlign?: 'left' | 'center' | 'right'
+}
 
 const TableCellHeader = ({ children }: TableCellHeaderProps) => {
   return <MUITableCell>{children}</MUITableCell>

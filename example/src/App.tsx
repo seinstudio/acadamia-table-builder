@@ -67,6 +67,7 @@ const App = () => {
           selected
         )
       }}
+      page={1}
     />
   )
 }

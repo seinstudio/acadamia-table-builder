@@ -1,11 +1,22 @@
 import React from 'react'
-import MuiTableHead from '@material-ui/core/TableHead'
+import MuiTableHead, {
+  TableHeadProps as MuiTableHeadProps
+} from '@material-ui/core/TableHead'
 import MUITableRow from '@material-ui/core/TableRow'
 import MUITableCell from '@material-ui/core/TableCell'
 import MUICheckbox from '@material-ui/core/Checkbox'
 
-import { TableHeadProps } from '../typings'
 import Typography from '@material-ui/core/Typography'
+
+export interface TableHeadProps<T> extends MuiTableHeadProps {
+  colSpan?: number
+  selected?: number
+  toolbar?: React.ReactNode | React.ReactNodeArray
+  selectable?: boolean
+  draggable?: boolean
+  items?: T[]
+  toggleAll?: (items: T[], selected: number) => void
+}
 
 const TableHead = ({
   children,
