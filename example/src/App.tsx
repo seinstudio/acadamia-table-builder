@@ -1,7 +1,7 @@
 import React from 'react'
 import faker from 'faker'
 
-import TableBuilder, { useTableActions } from 'acadamia-table-builder'
+import { TableBuilder, useTableActions } from 'acadamia-table-builder'
 import 'acadamia-table-builder/dist/index.css'
 
 const generateDummyData = (count: number): any[] => {
