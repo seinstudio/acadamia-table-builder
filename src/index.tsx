@@ -1,5 +1,2 @@
-import TableBuilder from './Builder'
-
-export default TableBuilder
-
 export { default as useTableActions } from './hooks/useTableActions'
+export { default as TableBuilder } from './TableBuilder'
