@@ -16,6 +16,7 @@ export interface TableHeadProps<T> extends MuiTableHeadProps {
   draggable?: boolean
   items?: T[]
   toggleAll?: (items: T[], selected: number) => void
+  loading?: boolean
 }
 
 const TableHead = ({
@@ -26,12 +27,13 @@ const TableHead = ({
   items,
   toggleAll,
   toolbar,
+  loading = false,
   ...rest
 }: TableHeadProps<any>) => {
   return (
     <MuiTableHead {...rest}>
       <MUITableRow selected={!!selected}>
-        {selectable && items !== undefined && items.length > 0 && (
+        {!loading && selectable && items !== undefined && items.length > 0 && (
           <MUITableCell padding='checkbox'>
             <MUICheckbox
               indeterminate={items && items.length > selected && selected > 0}
@@ -47,7 +49,7 @@ const TableHead = ({
 
         {selected ? (
           <MUITableCell colSpan={colSpan}>
-            <div>
+             <div>
               {selected && <Typography>Selected {selected} items</Typography>}
               <div />
               {toolbar && <div>{toolbar}</div>}

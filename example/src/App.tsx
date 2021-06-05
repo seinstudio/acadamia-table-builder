@@ -2,7 +2,8 @@ import React from 'react'
 import faker from 'faker'
 
 import { TableBuilder, useTableActions } from 'acadamia-table-builder'
-import 'acadamia-table-builder/dist/index.css'
+// import Button from '@material-ui/core/Button'
+// import 'acadamia-table-builder/dist/index.css'
 
 const generateDummyData = (count: number): any[] => {
   return [...Array(count)]
@@ -20,14 +21,10 @@ const generateDummyData = (count: number): any[] => {
 }
 
 const App = () => {
-  const {
-    isSelected,
-    toggle,
-    toggleAll,
-    listElements
-  } = useTableActions<string>([])
+  const { isSelected, toggle, toggleAll, listElements } =
+    useTableActions<string>([])
 
-  const data = generateDummyData(20)
+  const data = generateDummyData(10)
 
   console.log(data)
   return (
@@ -37,7 +34,7 @@ const App = () => {
         {
           key: 'name',
           title: 'Name',
-          dataIndex: 'name'
+          dataIndex: 'name',
         },
         {
           key: 'email',
@@ -68,6 +65,22 @@ const App = () => {
         )
       }}
       page={1}
+      // toolbar={
+      //   <>
+      //     <Button color='primary'>Unpublish</Button>
+      //     <Button color='primary'>Publish</Button>
+      //     {/* <IconButton
+      //       color='primary'
+      //       onClick={() =>
+      //         openModal('delete', {
+      //           ids: listElements
+      //         })
+      //       }
+      //     >
+      //       <DeleteIcon />
+      //     </IconButton> */}
+      //   </>
+      // }
     />
   )
 }

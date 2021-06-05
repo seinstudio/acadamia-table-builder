@@ -7,8 +7,8 @@ export interface TableCellHeaderProps extends MUITableCellProps {
   textAlign?: 'left' | 'center' | 'right'
 }
 
-const TableCellHeader = ({ children }: TableCellHeaderProps) => {
-  return <MUITableCell>{children}</MUITableCell>
+const TableCellHeader = ({ children, ...rest }: TableCellHeaderProps) => {
+  return <MUITableCell {...rest}>{children}</MUITableCell>
 }
 
 export default TableCellHeader

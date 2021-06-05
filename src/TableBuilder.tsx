@@ -2,7 +2,7 @@ import * as React from 'react'
 import MUITable from '@material-ui/core/Table'
 import MUITableBody from '@material-ui/core/TableBody'
 import MUITableRow from '@material-ui/core/TableRow'
-import MUITableCell from '@material-ui/core/TableCell'
+import MUITableCell, { TableCellProps } from '@material-ui/core/TableCell'
 import MUITableFooter from '@material-ui/core/TableFooter'
 import MUITablePagination from '@material-ui/core/TablePagination'
 import MUICheckbox from '@material-ui/core/Checkbox'
@@ -10,7 +10,7 @@ import MUISkeleton from '@material-ui/lab/Skeleton'
 import TableHead, { TableHeadProps } from './components/TableHead'
 import TableCellHeader from './components/TableCellHeader'
 
-interface ColumnType {
+interface ColumnType extends TableCellProps {
   title: string
   key: string
   dataIndex: string
@@ -95,8 +95,6 @@ const TableBuilder = ({
   toggleAll,
   toolbar
 }: TableBuilderProps<any>) => {
-  console.log(loading)
-
   let noOfColumns = columns.length
 
   if (selectable) {
@@ -107,7 +105,6 @@ const TableBuilder = ({
     noOfColumns += 1
   }
 
-  console.log(data)
   return (
     <MUITable className={className}>
       <TableHead
@@ -117,10 +114,11 @@ const TableBuilder = ({
         toggleAll={toggleAll}
         items={data}
         toolbar={toolbar}
+        loading={loading}
       >
         {columns &&
-          columns.map(({ title, key }: ColumnType) => (
-            <TableCellHeader key={key}>
+          columns.map(({ title, key, ...rest }: ColumnType) => (
+            <TableCellHeader key={key} {...rest}>
               <span>{title}</span>
             </TableCellHeader>
           ))}
@@ -150,8 +148,8 @@ const TableBuilder = ({
                   </MUITableCell>
                 )}
                 {columns &&
-                  columns.map(({ key, dataIndex }) => (
-                    <MUITableCell data-test={dataIndex} key={key}>
+                  columns.map(({ key, dataIndex, ...rest }) => (
+                    <MUITableCell data-test={dataIndex} key={key} {...rest}>
                       {rowData && key in rowData ? rowData[key] : '-'}
                     </MUITableCell>
                   ))}
