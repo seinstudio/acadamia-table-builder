@@ -20,9 +20,9 @@ interface PaginationType {
   labelRowsPerPage?: React.ReactNode
   rowsPerPageOptions?: Array<number | { value: number; label: string }>
   rowsPerPage?: number
-  count: number
-  page: number
-  onPageChange: (
+  count?: number
+  page?: number
+  onPageChange?: (
     page: number,
     size: number,
     order: 'asc' | 'desc',
@@ -37,15 +37,13 @@ export interface TableBuilderProps<T>
   className?: string
   noDataMessage?: string
   loading?: boolean
-
   data?: T[]
-
   draggable?: boolean
-
   selectable?: boolean
   selectKey?: string
-  isChecked: (key: string) => boolean
+  isChecked?: (key: string) => boolean
   toggle?: (item: T) => void
+  hasPagination?: boolean
 }
 
 const PAGINATION_SIZES = [5, 10, 25]
@@ -85,7 +83,7 @@ const TableBuilder = ({
   rowsPerPageOptions = PAGINATION_SIZES,
   rowsPerPage = DEFAULT_PAGINATION_SIZE,
   count = 0,
-  page,
+  page = 1,
   onPageChange,
   data,
   selectKey = 'id',
@@ -93,7 +91,8 @@ const TableBuilder = ({
   selected = 0,
   toggle,
   toggleAll,
-  toolbar
+  toolbar,
+  hasPagination = true
 }: TableBuilderProps<any>) => {
   let noOfColumns = columns.length
 
@@ -117,8 +116,8 @@ const TableBuilder = ({
         loading={loading}
       >
         {columns &&
-          columns.map(({ title, key, ...rest }: ColumnType) => (
-            <TableCellHeader key={key} {...rest}>
+          columns.map(({ title, key, dataIndex, ...rest }: ColumnType) => (
+            <TableCellHeader data-test={dataIndex} key={key} {...rest}>
               <span>{title}</span>
             </TableCellHeader>
           ))}
@@ -128,7 +127,9 @@ const TableBuilder = ({
           data,
           loading,
           (rowData, index) => {
-            const isSelected = rowData ? isChecked(rowData[selectKey]) : false
+            const isSelected = rowData
+              ? isChecked && isChecked(rowData[selectKey])
+              : false
             return (
               <MUITableRow
                 selected={isSelected}
@@ -173,7 +174,7 @@ const TableBuilder = ({
           )
         )}
       </MUITableBody>
-      {!loading && (
+      {!loading && hasPagination && (
         <MUITableFooter>
           <MUITableRow>
             <MUITablePagination
@@ -184,15 +185,17 @@ const TableBuilder = ({
               rowsPerPage={rowsPerPage}
               page={page >= 1 ? page - 1 : 0}
               onChangePage={(_: any, currentPage: number) => {
-                onPageChange(currentPage + 1, rowsPerPage, 'asc', '')
+                if (onPageChange)
+                  onPageChange(currentPage + 1, rowsPerPage, 'asc', '')
               }}
               onChangeRowsPerPage={(e: any) => {
-                onPageChange(
-                  page,
-                  parseInt(e.target.value as string),
-                  'asc',
-                  ''
-                )
+                if (onPageChange)
+                  onPageChange(
+                    page,
+                    parseInt(e.target.value as string),
+                    'asc',
+                    ''
+                  )
               }}
             />
           </MUITableRow>
