@@ -44,7 +44,7 @@ export interface TableBuilderProps<T>
   isChecked?: (key: string) => boolean
   toggle?: (item: T) => void
   hasPagination?: boolean
-  onRowClick: (data: T) => void
+  onRowClick?: (data: T) => void
 }
 
 const PAGINATION_SIZES = [5, 10, 25]
@@ -137,8 +137,8 @@ const TableBuilder = ({
                 selected={isSelected}
                 hover={!!rowData}
                 key={rowData && 'id' in rowData ? rowData.id : index}
-                onClick={()=>{
-                  onRowClick(rowData)
+                onClick={() => {
+                  if (onRowClick) onRowClick(rowData)
                 }}
               >
                 {selectable && (
