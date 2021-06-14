@@ -1,19 +1,23 @@
 import * as React from 'react'
 import MUITable from '@material-ui/core/Table'
-import MUITableBody from '@material-ui/core/TableBody'
 import MUITableRow from '@material-ui/core/TableRow'
 import MUITableCell, { TableCellProps } from '@material-ui/core/TableCell'
 import MUITableFooter from '@material-ui/core/TableFooter'
 import MUITablePagination from '@material-ui/core/TablePagination'
 import MUICheckbox from '@material-ui/core/Checkbox'
 import MUISkeleton from '@material-ui/lab/Skeleton'
+// import DragIndicatorIcon from '@material-ui/icons/DragIndicator'
 import TableHead, { TableHeadProps } from './components/TableHead'
 import TableCellHeader from './components/TableCellHeader'
+import { renderTable } from './helper'
+import TableBody from './components/TableBody'
+import TableRow from './components/TableRow'
+import SortTableCell from './components/SortTableCell'
 
-interface ColumnType extends TableCellProps {
+interface ColumnType<T> extends TableCellProps {
   title: string
   key: string
-  dataIndex: string
+  renderCell?: (data: T) => React.ReactNode
 }
 
 interface PaginationType {
@@ -33,60 +37,38 @@ interface PaginationType {
 export interface TableBuilderProps<T>
   extends TableHeadProps<T>,
     PaginationType {
-  columns: ColumnType[]
   className?: string
+  columns: ColumnType<T>[]
+  data: T[]
   noDataMessage?: string
   loading?: boolean
-  data?: T[]
-  draggable?: boolean
   selectable?: boolean
+  draggable?: boolean
   selectKey?: string
   isChecked?: (key: string) => boolean
   toggle?: (item: T) => void
   hasPagination?: boolean
   onRowClick?: (data: T) => void
+  actions?: React.ReactNode
 }
 
 const PAGINATION_SIZES = [5, 10, 25]
 const DEFAULT_PAGINATION_SIZE = 5
 
-function renderTable<T>(
-  collection: T[] | undefined,
-  loading: boolean,
-  renderItem: (
-    item: T | undefined,
-    index: number | undefined,
-    collection: T[]
-  ) => any,
-  renderEmpty?: () => any,
-  renderLoading?: () => any
-) {
-  if (loading) {
-    return renderLoading ? renderLoading() : null
-  }
-  if (collection === undefined) {
-    return renderEmpty ? renderEmpty() : null
-  }
-  if (collection.length === 0) {
-    return renderEmpty ? renderEmpty() : null
-  }
-  return collection.map(renderItem)
-}
-
 const TableBuilder = ({
   className,
   columns,
+  data,
   noDataMessage = 'No Data Available',
-  selectable,
-  draggable,
   loading = false,
+  selectable = false,
+  draggable,
   labelRowsPerPage,
   rowsPerPageOptions = PAGINATION_SIZES,
   rowsPerPage = DEFAULT_PAGINATION_SIZE,
   count = 0,
   page = 1,
   onPageChange,
-  data,
   selectKey = 'id',
   isChecked,
   selected = 0,
@@ -94,7 +76,8 @@ const TableBuilder = ({
   toggleAll,
   toolbar,
   hasPagination = true,
-  onRowClick
+  onRowClick,
+  actions
 }: TableBuilderProps<any>) => {
   let noOfColumns = columns.length
 
@@ -103,6 +86,10 @@ const TableBuilder = ({
   }
 
   if (draggable) {
+    noOfColumns += 1
+  }
+
+  if (!!actions) {
     noOfColumns += 1
   }
 
@@ -116,24 +103,27 @@ const TableBuilder = ({
         items={data}
         toolbar={toolbar}
         loading={loading}
+        draggable={draggable}
       >
         {columns &&
-          columns.map(({ title, key, dataIndex, ...rest }: ColumnType) => (
-            <TableCellHeader data-test={dataIndex} key={key} {...rest}>
+          columns.map(({ title, key, ...rest }) => (
+            <TableCellHeader key={key} {...rest}>
               <span>{title}</span>
             </TableCellHeader>
           ))}
+
+        {actions && <MUITableCell />}
       </TableHead>
-      <MUITableBody>
+      <TableBody useDragHandle>
         {renderTable(
           data,
           loading,
           (rowData, index) => {
-            const isSelected = rowData
-              ? isChecked && isChecked(rowData[selectKey])
-              : false
+            const isSelected =
+              rowData && isChecked && !!isChecked(rowData[selectKey])
             return (
-              <MUITableRow
+              <TableRow
+                index={index || 0}
                 selected={isSelected}
                 hover={!!rowData}
                 key={rowData && 'id' in rowData ? rowData.id : index}
@@ -141,6 +131,8 @@ const TableBuilder = ({
                   if (onRowClick) onRowClick(rowData)
                 }}
               >
+                {draggable && <SortTableCell />}
+
                 {selectable && (
                   <MUITableCell padding='checkbox'>
                     <MUICheckbox
@@ -153,13 +145,22 @@ const TableBuilder = ({
                     />
                   </MUITableCell>
                 )}
+
                 {columns &&
-                  columns.map(({ key, dataIndex, ...rest }) => (
-                    <MUITableCell data-test={dataIndex} key={key} {...rest}>
-                      {rowData && key in rowData ? rowData[key] : '-'}
+                  columns.map(({ key, renderCell, ...rest }) => (
+                    <MUITableCell key={key} {...rest}>
+                      {renderCell
+                        ? renderCell(rowData)
+                        : key in rowData
+                        ? rowData[key]
+                        : '-'}
                     </MUITableCell>
                   ))}
-              </MUITableRow>
+
+                {actions && (
+                  <MUITableCell align={'right'}>{actions}</MUITableCell>
+                )}
+              </TableRow>
             )
           },
           () => (
@@ -170,15 +171,16 @@ const TableBuilder = ({
           () => (
             <MUITableRow>
               {columns &&
-                columns.map(({ key, dataIndex }) => (
-                  <MUITableCell data-test={dataIndex} key={key}>
+                columns.map(({ key }) => (
+                  <MUITableCell key={key}>
                     <MUISkeleton animation='wave' variant='text' />
                   </MUITableCell>
                 ))}
             </MUITableRow>
           )
         )}
-      </MUITableBody>
+      </TableBody>
+
       {!loading && hasPagination && (
         <MUITableFooter>
           <MUITableRow>

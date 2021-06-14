@@ -28,11 +28,13 @@ const TableHead = ({
   toggleAll,
   toolbar,
   loading = false,
+  draggable = false,
   ...rest
 }: TableHeadProps<any>) => {
   return (
     <MuiTableHead {...rest}>
       <MUITableRow selected={!!selected}>
+        {!loading && draggable && <MUITableCell />}
         {!loading && selectable && items !== undefined && items.length > 0 && (
           <MUITableCell padding='checkbox'>
             <MUICheckbox
@@ -49,7 +51,7 @@ const TableHead = ({
 
         {selected ? (
           <MUITableCell colSpan={colSpan}>
-             <div>
+            <div>
               {selected && <Typography>Selected {selected} items</Typography>}
               <div />
               {toolbar && <div>{toolbar}</div>}
