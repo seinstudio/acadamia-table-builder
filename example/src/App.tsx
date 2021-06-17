@@ -23,12 +23,8 @@ import DeleteIcon from '@material-ui/icons/Delete'
 // }
 
 const App = () => {
-  const {
-    isSelected,
-    toggle,
-    toggleAll,
-    listElements
-  } = useTableActions<string>([])
+  const { isSelected, toggle, toggleAll, listElements } =
+    useTableActions<string>([])
 
   const data = [
     {
@@ -114,20 +110,30 @@ const App = () => {
   ]
 
   return (
-    <TableBuilder
+    <TableBuilder<{
+      firstName: string
+      lastName: string
+      email: string
+      phone: string
+      name: string
+      id: string
+    }>
       loading={false}
       columns={[
         {
           key: 'name',
-          title: 'Name'
+          title: 'Name',
+          dataIndex: 'name'
         },
         {
           key: 'email',
-          title: 'Email'
+          title: 'Email',
+          dataIndex: 'email'
         },
         {
           key: 'phone',
-          title: 'Phone'
+          title: 'Phone',
+          dataIndex: 'phone'
         }
       ]}
       data={data}

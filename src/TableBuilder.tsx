@@ -16,7 +16,8 @@ import SortTableCell from './components/SortTableCell'
 
 interface ColumnType<T> extends TableCellProps {
   title: string
-  key: string
+  key: keyof T
+  dataIndex: string
   renderCell?: (data: T) => React.ReactNode
 }
 
@@ -39,7 +40,7 @@ export interface TableBuilderProps<T>
     PaginationType {
   className?: string
   columns: ColumnType<T>[]
-  data: T[]
+  data?: T[]
   noDataMessage?: string
   loading?: boolean
   selectable?: boolean
@@ -55,7 +56,7 @@ export interface TableBuilderProps<T>
 const PAGINATION_SIZES = [5, 10, 25]
 const DEFAULT_PAGINATION_SIZE = 5
 
-const TableBuilder = ({
+const TableBuilder = <T,>({
   className,
   columns,
   data,
@@ -78,7 +79,7 @@ const TableBuilder = ({
   hasPagination = true,
   onRowClick,
   actions
-}: TableBuilderProps<any>) => {
+}: React.PropsWithChildren<TableBuilderProps<T>>) => {
   let noOfColumns = columns.length
 
   if (selectable) {
@@ -106,8 +107,8 @@ const TableBuilder = ({
         draggable={draggable}
       >
         {columns &&
-          columns.map(({ title, key, ...rest }) => (
-            <TableCellHeader key={key} {...rest}>
+          columns.map(({ title, key, dataIndex, ...rest }) => (
+            <TableCellHeader key={dataIndex} {...rest}>
               <span>{title}</span>
             </TableCellHeader>
           ))}
@@ -121,47 +122,52 @@ const TableBuilder = ({
           (rowData, index) => {
             const isSelected =
               rowData && isChecked && !!isChecked(rowData[selectKey])
-            return (
-              <TableRow
-                index={index || 0}
-                selected={isSelected}
-                hover={!!rowData}
-                key={rowData && 'id' in rowData ? rowData.id : index}
-                onClick={() => {
-                  if (onRowClick) onRowClick(rowData)
-                }}
-              >
-                {draggable && <SortTableCell />}
 
-                {selectable && (
-                  <MUITableCell padding='checkbox'>
-                    <MUICheckbox
-                      checked={isSelected}
-                      onChange={() => {
-                        if (toggle && rowData) {
-                          toggle(rowData)
-                        }
-                      }}
-                    />
-                  </MUITableCell>
-                )}
+            if (rowData) {
+              return (
+                <TableRow
+                  index={index || 0}
+                  selected={isSelected}
+                  hover={!!rowData}
+                  // key={rowData && 'id' in rowData ? rowData.id : index}
+                  key={index}
+                  onClick={() => {
+                    if (onRowClick) onRowClick(rowData)
+                  }}
+                >
+                  {draggable && <SortTableCell />}
 
-                {columns &&
-                  columns.map(({ key, renderCell, ...rest }) => (
-                    <MUITableCell key={key} {...rest}>
-                      {renderCell
-                        ? renderCell(rowData)
-                        : key in rowData
-                        ? rowData[key]
-                        : '-'}
+                  {selectable && (
+                    <MUITableCell padding='checkbox'>
+                      <MUICheckbox
+                        checked={isSelected}
+                        onChange={() => {
+                          if (toggle && rowData) {
+                            toggle(rowData)
+                          }
+                        }}
+                      />
                     </MUITableCell>
-                  ))}
+                  )}
 
-                {actions && (
-                  <MUITableCell align={'right'}>{actions}</MUITableCell>
-                )}
-              </TableRow>
-            )
+                  {columns &&
+                    columns.map(({ key, dataIndex, renderCell, ...rest }) => (
+                      <MUITableCell key={dataIndex} {...rest}>
+                        {renderCell
+                          ? renderCell(rowData)
+                          : key in rowData
+                          ? rowData[key]
+                          : '-'}
+                      </MUITableCell>
+                    ))}
+
+                  {actions && (
+                    <MUITableCell align={'right'}>{actions}</MUITableCell>
+                  )}
+                </TableRow>
+              )
+            }
+            return null
           },
           () => (
             <MUITableRow>
@@ -171,8 +177,8 @@ const TableBuilder = ({
           () => (
             <MUITableRow>
               {columns &&
-                columns.map(({ key }) => (
-                  <MUITableCell key={key}>
+                columns.map(({ dataIndex }) => (
+                  <MUITableCell key={dataIndex}>
                     <MUISkeleton animation='wave' variant='text' />
                   </MUITableCell>
                 ))}
