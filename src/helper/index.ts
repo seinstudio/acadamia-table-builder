@@ -1,10 +1,10 @@
 export const renderTable = <T>(
-  collection: T[],
+  collection: T[] | undefined,
   loading: boolean,
   renderItem: (
     item: T | undefined,
     index: number | undefined,
-    collection: T[]
+    collection: T[] | undefined
   ) => any,
   renderEmpty?: (collection: T[]) => any,
   renderLoading?: () => any

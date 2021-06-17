@@ -16,7 +16,7 @@ import SortTableCell from './components/SortTableCell'
 
 interface ColumnType<T> extends TableCellProps {
   title: string
-  key: keyof T
+  key: string
   dataIndex: string
   renderCell?: (data: T) => React.ReactNode
 }
